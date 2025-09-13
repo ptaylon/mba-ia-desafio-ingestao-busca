@@ -53,7 +53,7 @@ def main():
             
             # Check if user wants to exit
             if question.lower() in ['sair', 'exit', 'quit']:
-                print("Goodbye! 👋")
+                print("Goodbye!")
                 break
             
             # Check if question is not empty

@@ -49,9 +49,9 @@ def search_prompt(question=None):
     
     # Connect to PostgreSQL vector database
     vectorstore = PGVector(
-        embedding=embeddings,
+        embeddings=embeddings,
         collection_name=os.getenv("PG_VECTOR_COLLECTION_NAME"),
-        connection_string=os.getenv("DATABASE_URL")
+        connection=os.getenv("DATABASE_URL")
     )
     
     # Search for documents similar to the question (top 10 results)
