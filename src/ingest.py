@@ -3,8 +3,8 @@ from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_postgres import PGVector
+#from langchain_openai import OpenAIEmbeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_openai import OpenAIEmbeddings
 from langchain_core.documents import Document
 from dotenv import load_dotenv
 
@@ -12,7 +12,7 @@ load_dotenv()
 
 def check_required_enviroments():
     # Check if all the required environment variable are defined
-    for environment in ["OPENAI_API_KEY", "GOOGLE_API_KEY", "PDF_PATH", "DATABASE_URL", "PG_VECTOR_COLLECTION_NAME"]:
+    for environment in ["GOOGLE_API_KEY", "PDF_PATH", "DATABASE_URL", "PG_VECTOR_COLLECTION_NAME"]:
         if not os.getenv(environment):
             raise ValueError(f"A variável de ambiente {environment} não está definida")
 
@@ -48,19 +48,20 @@ def split_document(pdf_path):
 
 def create_embeddings():
     # Create the embeddings
-    embeddings = OpenAIEmbeddings(
-        model=os.getenv("OPENAI_EMBEDDINGS_MODEL", "text-embedding-3-small")
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model=os.getenv("GOOGLE_EMBEDDING_MODEL", "models/embedding-001")
     )
     return embeddings
 
 def save_to_database(enriched_chunks, ids, embeddings):
     # Save the chunks to the database
-    PGVector.from_documents(
-        enriched_chunks, 
-        ids, 
-        embeddings, 
-        collection_name=os.getenv("PG_VECTOR_COLLECTION_NAME")
+    store = PGVector(
+        embeddings=embeddings, 
+        collection_name=os.getenv("PG_VECTOR_COLLECTION_NAME"),
+        connection=os.getenv("DATABASE_URL"),
+        use_jsonb=True
     )
+    store.add_documents(documents=enriched_chunks, ids=ids)
 
 
 def ingest_pdf():
