@@ -3,8 +3,8 @@ from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_postgres import PGVector
-#from langchain_openai import OpenAIEmbeddings
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
+#from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 from dotenv import load_dotenv
 
@@ -12,7 +12,7 @@ load_dotenv()
 
 def check_required_enviroments():
     # Check if all the required environment variable are defined
-    for environment in ["GOOGLE_API_KEY", "PDF_PATH", "DATABASE_URL", "PG_VECTOR_COLLECTION_NAME"]:
+    for environment in ["OPENAI_API_KEY", "GOOGLE_API_KEY", "PDF_PATH", "DATABASE_URL", "PG_VECTOR_COLLECTION_NAME"]:
         if not os.getenv(environment):
             raise ValueError(f"A variável de ambiente {environment} não está definida")
 
@@ -48,8 +48,8 @@ def split_document(pdf_path):
 
 def create_embeddings():
     # Create the embeddings
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model=os.getenv("GOOGLE_EMBEDDING_MODEL", "models/embedding-001")
+    embeddings = OpenAIEmbeddings(
+        model=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
     )
     return embeddings
 

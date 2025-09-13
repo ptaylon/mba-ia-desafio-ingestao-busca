@@ -39,7 +39,7 @@ GOOGLE_LLM_MODEL=gemini-2.0-flash-exp
 docker compose up -d
 ```
 
-2. **Executar ingestão do PDF:**
+2. **Executar ingestão do PDF (Para este modelo foi usado exclusivamente OPENAI):**
 ```bash
 python src/ingest.py
 ```
