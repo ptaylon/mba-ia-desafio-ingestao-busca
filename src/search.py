@@ -1,3 +1,10 @@
+import os
+from dotenv import load_dotenv
+from langchain_openai import OpenAIEmbeddings
+from langchain_postgres import PGVector
+
+load_dotenv()
+
 PROMPT_TEMPLATE = """
 CONTEXTO:
 {contexto}
@@ -25,5 +32,35 @@ PERGUNTA DO USUÁRIO:
 RESPONDA A "PERGUNTA DO USUÁRIO"
 """
 
+def check_required_environments():
+    # Check if all the required environment variable are defined
+    for environment in ["OPENAI_API_KEY", "DATABASE_URL", "PG_VECTOR_COLLECTION_NAME"]:
+        if not os.getenv(environment):
+            raise ValueError(f"A variável de ambiente {environment} não está definida")
+
 def search_prompt(question=None):
-    pass
+    # Check if environment variables are configured
+    check_required_environments()
+    
+    # Create OpenAI embeddings model instance
+    embeddings = OpenAIEmbeddings(
+        model=os.getenv("OPENAI_EMBEDDINGS_MODEL", "text-embedding-3-small")
+    )
+    
+    # Connect to PostgreSQL vector database
+    vectorstore = PGVector(
+        embedding=embeddings,
+        collection_name=os.getenv("PG_VECTOR_COLLECTION_NAME"),
+        connection_string=os.getenv("DATABASE_URL")
+    )
+    
+    # Search for documents similar to the question (top 10 results)
+    results = vectorstore.similarity_search_with_score(question, k=10)
+    
+    # Extract page content from search results and join with newlines
+    context = "\n".join([result[0].page_content for result in results])
+    
+    # Format the prompt template with context and question
+    prompt = PROMPT_TEMPLATE.format(contexto=context, pergunta=question)
+    
+    return prompt
