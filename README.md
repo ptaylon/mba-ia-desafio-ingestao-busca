@@ -16,20 +16,17 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
 ```env
 # Configurações do banco de dados
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/vectordb
-PG_VECTOR_COLLECTION_NAME=documentos
+DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/rag
+PG_VECTOR_COLLECTION_NAME=mba_collection
 
 # Caminho para o PDF
 PDF_PATH=document.pdf
 
 # OpenAI (opcional - escolha entre OpenAI ou Google)
 OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_EMBEDDINGS_MODEL=text-embedding-3-small
-OPENAI_LLM_MODEL=gpt-4o-mini
 
 # Google Gemini (opcional - escolha entre OpenAI ou Google)
 GOOGLE_API_KEY=your_google_api_key_here
-GOOGLE_LLM_MODEL=gemini-2.0-flash-exp
 ```
 
 ### 3. Execução
